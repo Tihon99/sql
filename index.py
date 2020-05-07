@@ -42,9 +42,10 @@ class Node(object):
         '''
         Splits the node into two and stores them as child nodes.
         '''
+        '''
         left = Node(self.order)
         right = Node(self.order)
-        mid = self.order / 2
+        mid = self.order // 2
 
         left.keys = self.keys[:mid]
         left.values = self.values[:mid]
@@ -53,6 +54,25 @@ class Node(object):
         right.values = self.values[mid:]
 
         self.keys = [right.keys[0]]
+        self.values = [left, right]
+        self.leaf = False
+        '''
+
+        left = Node(self.order)
+        right = Node(self.order)
+        mid = self.order // 2 - 1
+
+        left.keys = self.keys[:mid]
+        left.values = self.values[:mid]
+
+        right.keys = self.keys[(mid):]
+        right.values = self.values[(mid):]
+
+        self.keys = [right.keys[0]]
+
+        right.keys = right.keys[1:]
+        right.values = right.values[1:]
+
         self.values = [left, right]
         self.leaf = False
 
@@ -66,7 +86,7 @@ class Node(object):
         '''
         Prints the keys at each level.
         '''
-        print counter, str(self.keys)
+        print (counter, str(self.keys))
 
         if not self.leaf:
             for item in self.values:
@@ -159,57 +179,57 @@ class BPlusTree(object):
         self.root.show()
 
 def demo_node():
-    print 'Initializing node...'
+    print ('Initializing node...')
     node = Node(order=4)
 
-    print '\nInserting key a...'
+    print ('\nInserting key a...')
     node.add('a', 'alpha')
-    print 'Is node full?', node.is_full()
+    print ('Is node full?', node.is_full())
     node.show()
 
-    print '\nInserting keys b, c, d...'
+    print ('\nInserting keys b, c, d...')
     node.add('b', 'bravo')
     node.add('c', 'charlie')
     node.add('d', 'delta')
-    print 'Is node full?', node.is_full()
+    print ('Is node full?', node.is_full())
     node.show()
 
-    print '\nSplitting node...'
+    print ('\nSplitting node...')
     node.split()
     node.show()
 
 def demo_bplustree():
-    print 'Initializing B+ tree...'
+    print ('Initializing B+ tree...')
     bplustree = BPlusTree(order=4)
 
-    print '\nB+ tree with 1 item...'
+    print ('\nB+ tree with 1 item...')
     bplustree.insert('a', 'alpha')
     bplustree.show()
 
-    print '\nB+ tree with 2 items...'
+    print ('\nB+ tree with 2 items...')
     bplustree.insert('b', 'bravo')
     bplustree.show()
 
-    print '\nB+ tree with 3 items...'
+    print ('\nB+ tree with 3 items...')
     bplustree.insert('c', 'charlie')
     bplustree.show()
 
-    print '\nB+ tree with 4 items...'
+    print ('\nB+ tree with 4 items...')
     bplustree.insert('d', 'delta')
     bplustree.show()
 
-    print '\nB+ tree with 5 items...'
+    print ('\nB+ tree with 5 items...')
     bplustree.insert('e', 'echo')
     bplustree.show()
 
-    print '\nB+ tree with 6 items...'
+    print ('\nB+ tree with 6 items...')
     bplustree.insert('f', 'foxtrot')
     bplustree.show()
 
-    print '\nRetrieving values with key e...'
-    print bplustree.retrieve('e')
+    print ('\nRetrieving values with key e...')
+    print (bplustree.retrieve('e'))
 
 if __name__ == '__main__':
     demo_node()
-    print '\n'
+    print ('\n')
     demo_bplustree()
