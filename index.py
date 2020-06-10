@@ -1,13 +1,14 @@
 class Node(object):
     '''
-    Base node object.
-
-    Each node stores keys and values. Keys are not unique to each value, and
-    as such values are stored as a list under each key.
-
-    Attributes:
-        order (int): The maximum number of keys each node can hold.
+    Базовый узел объекта.
+    Каждый узел хранит ключи и значения. Ключи не являются уникальными для                 
+    каждого значения,поскольку такие значения хранятся в виде списка под 
+    каждым ключом.	
+    Атрибуты: order (int): максимальное количество ключей, которое может   
+    содержать каждый узел.
     '''
+    keys: object
+
     def __init__(self, order):
         self.order = order
         self.keys = []
@@ -16,7 +17,7 @@ class Node(object):
 
     def add(self, key, value):
         '''
-        Adds a key-value pair to the node.
+        Добавляет пару ключ-значений к узлу.
         '''
         if not self.keys:
             self.keys.append(key)
@@ -32,7 +33,7 @@ class Node(object):
                 self.keys = self.keys[:i] + [key] + self.keys[i:]
                 self.values = self.values[:i] + [[value]] + self.values[i:]
                 break
-
+    # i отстаёт на одно значение, key[i] - i+1й элемент списка -> элемент №4
             elif i + 1 == len(self.keys):
                 self.keys.append(key)
                 self.values.append([value])
@@ -40,28 +41,12 @@ class Node(object):
 
     def split(self):
         '''
-        Splits the node into two and stores them as child nodes.
+        Разбивает узел на две части и сохраняет их как дочерние узлы.
         '''
-        '''
-        left = Node(self.order)
-        right = Node(self.order)
-        mid = self.order // 2
-
-        left.keys = self.keys[:mid]
-        left.values = self.values[:mid]
-
-        right.keys = self.keys[mid:]
-        right.values = self.values[mid:]
-
-        self.keys = [right.keys[0]]
-        self.values = [left, right]
-        self.leaf = False
-        '''
-
         left = Node(self.order)
         right = Node(self.order)
         mid = self.order // 2 - 1
-
+	
         left.keys = self.keys[:mid]
         left.values = self.values[:mid]
 
@@ -78,15 +63,15 @@ class Node(object):
 
     def is_full(self):
         '''
-        Returns True if the node is full.
+        Возвращает True, если узел заполнен.
         '''
         return len(self.keys) == self.order
 
     def show(self, counter=0):
         '''
-        Prints the keys at each level.
+        Печатает ключи на каждом уровне.
         '''
-        print (counter, str(self.keys))
+        print(counter, str(self.keys))
 
         if not self.leaf:
             for item in self.values:
@@ -94,22 +79,21 @@ class Node(object):
 
 class BPlusTree(object):
     '''
-    B+ tree object, consisting of nodes.
-
-    Nodes will automatically be split into two once it is full. When a split
-    occurs, a key will 'float' upwards and be inserted into the parent node to
-    act as a pivot.
-
-    Attributes:
-        order (int): The maximum number of keys each node can hold.
+    B+ tree object, состоящий из узлов.
+    Узлы будут автоматически разделены на два, после заполнения. Когда 
+    Происходит раскол, ключ будет 'плавать' вверх и будет вставлен в  
+    родительский узел для того,чтобы действовать как стержень.
+    Атрибуты:
+        order (int): максимальное количество ключей, которое модет содержать 
+    каждый узел.
     '''
     def __init__(self, order=8):
         self.root = Node(order)
 
     def _find(self, node, key):
         '''
-        For a given node and key, returns the index where the key should be
-        inserted and the list of values at that index.
+        Для данного узла и ключа возвращает индекс, где ключ должен быть
+        вставлен и список значений по этому индексу.
         '''
         for i, item in enumerate(node.keys):
             if key < item:
@@ -119,9 +103,9 @@ class BPlusTree(object):
 
     def _merge(self, parent, child, index):
         '''
-        For a parent and child node, extract a pivot from the child to be
-        inserted into the keys of the parent. Insert the values from the child
-        into the values of the parent.
+        Для родительского и дочернего узла извлекает свободый элемент из 
+        дочернего и вставляет в ключи родителя. Вставляет значения от 
+        ребенка в значения родителя.
         '''
         parent.values.pop(index)
         pivot = child.keys[0]
@@ -129,7 +113,8 @@ class BPlusTree(object):
         for i, item in enumerate(parent.keys):
             if pivot < item:
                 parent.keys = parent.keys[:i] + [pivot] + parent.keys[i:]
-                parent.values = parent.values[:i] + child.values + parent.values[i:]
+                parent.values = parent.values[:i] + child.values +                    
+                parent.values[i:]
                 break
 
             elif i + 1 == len(parent.keys):
@@ -139,8 +124,8 @@ class BPlusTree(object):
 
     def insert(self, key, value):
         '''
-        Inserts a key-value pair after traversing to a leaf node. If the leaf
-        node is full, split the leaf node into two.
+        Вставляет пару ключ-значений после перехода к конечному узлу.
+        Если листовой узел заполнен, разделяет листвой узел на две части 
         '''
         parent = None
         child = self.root
@@ -159,7 +144,8 @@ class BPlusTree(object):
 
     def retrieve(self, key):
         '''
-        Returns a value for a given key, and None if the key does not exist.
+        Возвращает значение для данного ключа и None, если ключ не 
+        существует    
         '''
         child = self.root
 
@@ -174,62 +160,63 @@ class BPlusTree(object):
 
     def show(self):
         '''
-        Prints the keys at each level.
+        Печатает ключи на каждом уровне.
         '''
         self.root.show()
 
 def demo_node():
-    print ('Initializing node...')
+    print('Initializing node...')
     node = Node(order=4)
 
-    print ('\nInserting key a...')
+    print('\nInserting key a...')
     node.add('a', 'alpha')
-    print ('Is node full?', node.is_full())
+    print('Is node full?', node.is_full())
     node.show()
 
-    print ('\nInserting keys b, c, d...')
+    print('\nInserting keys b, c, d...')
     node.add('b', 'bravo')
     node.add('c', 'charlie')
     node.add('d', 'delta')
-    print ('Is node full?', node.is_full())
+    print('Is node full?', node.is_full())
+    print(len(node.keys))
     node.show()
 
-    print ('\nSplitting node...')
+    print('\nSplitting node...')
     node.split()
     node.show()
 
 def demo_bplustree():
-    print ('Initializing B+ tree...')
+    print('Initializing B+ tree...')
     bplustree = BPlusTree(order=4)
 
-    print ('\nB+ tree with 1 item...')
+    print('\nB+ tree with 1 item...')
     bplustree.insert('a', 'alpha')
     bplustree.show()
 
-    print ('\nB+ tree with 2 items...')
+    print('\nB+ tree with 2 items...')
     bplustree.insert('b', 'bravo')
     bplustree.show()
 
-    print ('\nB+ tree with 3 items...')
+    print('\nB+ tree with 3 items...')
     bplustree.insert('c', 'charlie')
     bplustree.show()
 
-    print ('\nB+ tree with 4 items...')
+    print('\nB+ tree with 4 items...')
     bplustree.insert('d', 'delta')
     bplustree.show()
 
-    print ('\nB+ tree with 5 items...')
+    print('\nB+ tree with 5 items...')
     bplustree.insert('e', 'echo')
     bplustree.show()
 
-    print ('\nB+ tree with 6 items...')
+    print('\nB+ tree with 6 items...')
     bplustree.insert('f', 'foxtrot')
     bplustree.show()
 
-    print ('\nRetrieving values with key e...')
-    print (bplustree.retrieve('e'))
+    print('\nRetrieving values with key e...')
+    print(bplustree.retrieve('e'))
 
 if __name__ == '__main__':
     demo_node()
-    print ('\n')
+    print('\n')
     demo_bplustree()
