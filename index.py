@@ -113,8 +113,7 @@ class BPlusTree(object):
         for i, item in enumerate(parent.keys):
             if pivot < item:
                 parent.keys = parent.keys[:i] + [pivot] + parent.keys[i:]
-                parent.values = parent.values[:i] + child.values +                    
-                parent.values[i:]
+                parent.values = parent.values[:i] + child.values + parent.values[i:]
                 break
 
             elif i + 1 == len(parent.keys):
